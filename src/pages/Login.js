@@ -1,32 +1,50 @@
-import React, {useState} from "react"
+import React, {useState,useEffect,useCallback} from "react"
 import {Centered} from "../components/Centered"
 
 export function Login() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [submitIsDisabled, setSubmitIsDisabled] = useState(true)
+    const [termsChecked,setTermsChecked] = useState(false)
+    const dark = true;
 
-    const onChangeEmail = (event) => {
+    useEffect(() => {
+        const enabled= (termsChecked && password.length > 6 && email)
+
+        setSubmitIsDisabled(!enabled)
+
+        console.log(email,password)
+    },[email,password,termsChecked])
+
+    useEffect(() => {
+        console.log("mounted")
+    },[])
+
+    /*const onChangeEmail = (event) => {
         setEmail(event.target.value)
-    }
+    }*/
 
-    const onChangePassword = (event) => {
+    const onChangeEmail = useCallback((event) => {
+        setEmail(event.target.value)
+    },[])
+
+
+    const onChangePassword = useCallback((event) => {
         setPassword(event.target.value)
-    }
+    },[])
 
-    const onSubmit = (event) => {
+    const onSubmit = useCallback((event) => {
         event.preventDefault()
         if (submitIsDisabled) return 
         console.log(email, password)
-    }
+    },[submitIsDisabled,email,password])
 
-    const onChangeCheckBox = (event) => {
-        setSubmitIsDisabled(!event.target.checked)
-        console.log(event.target.checked)
-    }
+    const onChangeCheckBox = useCallback((event) => {
+        setTermsChecked(event.target.checked)
+    },[])
 
     return (
-        <Centered>
+        <Centered dark={dark}>
             <form onSubmit={onSubmit}>
                 <div className="field">
                     <label className="label">email</label>
@@ -45,6 +63,7 @@ export function Login() {
                         className="input" 
                         type="password"
                         onChange={onChangePassword}
+                        minLength={6}
                         />
                     </div>
                 </div>
@@ -52,8 +71,11 @@ export function Login() {
                 <div className="field">
                     <div className="control">
                         <label className="checkbox">
-                        <input type="checkbox" onChange={onChangeCheckBox}/>
-                        &nbsp;I agree to the <a href="#">terms and conditions</a>
+                        <input
+                            type="checkbox"
+                            onChange={onChangeCheckBox}
+                            checked={termsChecked}/>
+                          &nbsp;I agree to the <a href="https://www.google.it" >terms and conditions</a>
                         </label>
                     </div>
                 </div>
