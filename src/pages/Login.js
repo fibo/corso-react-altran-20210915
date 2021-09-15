@@ -1,24 +1,40 @@
 import React, {useState,useEffect,useCallback} from "react"
 import {Centered} from "../components/Centered"
+import {Terms} from "../components/Terms";
+
+function isMobile(width){
+    return width < 768;
+}
 
 export function Login() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [submitIsDisabled, setSubmitIsDisabled] = useState(true)
     const [termsChecked,setTermsChecked] = useState(false)
-    const dark = true;
+    const [dark,setDark] =  useState(false);
 
     useEffect(() => {
         const enabled= (termsChecked && password.length > 6 && email)
-
         setSubmitIsDisabled(!enabled)
-
         console.log(email,password)
     },[email,password,termsChecked])
 
-    useEffect(() => {
-        console.log("mounted")
+
+    const handleResize = useCallback(()=>{
+        console.log("resize");
+        const width = window.innerWidth;
+        setDark(isMobile(width));
     },[])
+
+    useEffect(() => {
+
+        window.addEventListener('resize',handleResize);
+        return () => {
+            window.removeEventListener('resize',handleResize);
+        }
+    },[])
+
+
 
     /*const onChangeEmail = (event) => {
         setEmail(event.target.value)
@@ -88,6 +104,7 @@ export function Login() {
                 </div>
                 
             </form>
+            {termsChecked?null: <Terms />}
         </Centered>
     )
 }
